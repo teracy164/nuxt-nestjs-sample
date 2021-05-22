@@ -2,6 +2,11 @@
 
 Nuxt.js と NestJS を使った TODO アプリです
 
+## 前提
+
+- Node.js インストール済み
+- docker / docker-compose インストール済み
+
 ## 環境構築
 
 - プロジェクトルートで以下実行
