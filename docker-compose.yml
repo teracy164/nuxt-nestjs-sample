@@ -48,7 +48,7 @@ services:
     ports:
       - 8000:80
     volumes:
-      - ./db/pgadmin4:/var/lib/pgadmin
+      - ./.db/pgadmin4:/var/lib/pgadmin
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@example.com
       - PGADMIN_DEFAULT_PASSWORD=admin
