@@ -1,0 +1,56 @@
+version: '3'
+services:
+  server:
+    image: node:12-alpine
+    container_name: server
+    working_dir: /develop
+    volumes:
+      - ./packages/server:/develop
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    command: 'npm run start:dev'
+    environment:
+      # dbコンテナ名を指定
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=test
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+
+  front:
+    image: node:12-alpine
+    container_name: front
+    working_dir: /develop
+    volumes:
+      - ./packages/front:/develop
+    ports:
+      - 80:3000
+    command: 'npm run dev'
+
+  db:
+    image: postgres:12-alpine
+    container_name: db
+    ports:
+      - 5432:5432
+    volumes:
+      - .db/dev/data:/var/lib/postgresql/data
+      - .db/dev/initdb:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=test
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - 8000:80
+    volumes:
+      - ./db/pgadmin4:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - db
