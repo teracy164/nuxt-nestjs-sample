@@ -1,0 +1,36 @@
+version: '3'
+services:
+  server:
+    image: node:12-alpine
+    container_name: server_prod
+    working_dir: /develop
+    volumes:
+      - ./packages/server:/develop
+      # フロント側のビルドディレクトリを連携
+      # （distだとサーバーサイドのビルドディレクトリと被るため、publicにリネームして配置）
+      - ./packages/front/dist:/develop/public
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    command: 'npm run start:prod'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+
+  db:
+    image: postgres:12-alpine
+    container_name: db_prod
+    ports:
+      - 5432:5432
+    volumes:
+      - .db/prod/data:/var/lib/postgresql/data
+      - .db/prod/initdb:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}

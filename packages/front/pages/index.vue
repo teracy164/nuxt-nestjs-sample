@@ -61,18 +61,29 @@ export default Vue.extend({
       todos: []
     };
   },
+  computed: {
+    ApiRoot: () => {
+      if (process.env.NODE_ENV === "develop") {
+        return "http://localhost:3000/api";
+      } else {
+        // 本番はSame Originを想定
+        return "/api";
+      }
+    }
+  },
   mounted() {
     this.getTodos();
   },
   methods: {
     async getTodos() {
-      const result = await this.$axios.get("http://localhost:3000/api/todos");
+      const result = await this.$axios.get(`${this.ApiRoot}/todos`);
       if (result.status === 200) {
         this.todos = result.data;
+        this.form.contents = null;
       }
     },
     async addTodo() {
-      await this.$axios.post("http://localhost:3000/api/todos", this.form);
+      await this.$axios.post(`${this.ApiRoot}/todos`, this.form);
       this.getTodos();
     },
     editTodo(todo: { id: number; contents: string }) {
@@ -80,7 +91,7 @@ export default Vue.extend({
     },
     async updateTodo() {
       await this.$axios.put(
-        "http://localhost:3000/api/todos/" + this.rowForm.id,
+        `${this.ApiRoot}/todos/` + this.rowForm.id,
         this.rowForm
       );
       this.rowForm.id = null;
@@ -88,7 +99,7 @@ export default Vue.extend({
       this.getTodos();
     },
     async deleteTodo(id: number) {
-      await this.$axios.delete("http://localhost:3000/api/todos/" + id);
+      await this.$axios.delete(`${this.ApiRoot}/todos/` + id);
       this.getTodos();
     }
   }
@@ -101,7 +112,6 @@ export default Vue.extend({
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  text-align: center;
 }
 
 .title {
